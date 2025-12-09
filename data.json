@@ -1,0 +1,39 @@
+[
+    {
+        "type": "hero",
+        "text": "2025",
+        "subtext": "Your Company Wrapped"
+    },
+    {
+        "type": "stat",
+        "header": "We've crimped",
+        "value": "27,000",
+        "unit": "pins",
+        "context": "That's enough to circle the block 50 times!",
+        "image": "assets/graphic-pens.svg"
+    },
+    {
+        "type": "stat",
+        "header": "Coffee consumed",
+        "value": "4,500",
+        "unit": "gallons",
+        "context": "fueling innovation, one cup at a time.",
+        "image": "assets/graphic-coffee.svg"
+    },
+    {
+        "type": "text",
+        "text": "But it wasn't just about the numbers..."
+    },
+    {
+        "type": "stat",
+        "header": "New hires",
+        "value": "12",
+        "unit": "legends",
+        "context": "Welcome to the family!"
+    },
+    {
+        "type": "outro",
+        "text": "Here's to 2026!",
+        "subtext": "Let's make it even better."
+    }
+]
