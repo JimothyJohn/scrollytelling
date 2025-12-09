@@ -1,0 +1,7 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="400" height="300" rx="20" fill="#2A2A2A"/>
+<circle cx="200" cy="150" r="80" fill="#FF4D4D" fill-opacity="0.2"/>
+<path d="M150 200L250 100" stroke="#FF4D4D" stroke-width="10" stroke-linecap="round"/>
+<path d="M150 100L250 200" stroke="#FF4D4D" stroke-width="10" stroke-linecap="round"/>
+<text x="50%" y="90%" dominant-baseline="middle" text-anchor="middle" fill="#aaa" font-family="sans-serif" font-size="20">27,000 Pens</text>
+</svg>
