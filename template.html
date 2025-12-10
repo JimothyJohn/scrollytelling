@@ -115,7 +115,7 @@
         }
 
         .subtext {
-            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            font-size: clamp(2.4rem, 4vw, 3.6rem);
             font-weight: 300;
             color: var(--accent-color);
             /* The requested #79b436 */
@@ -197,24 +197,31 @@
 
                 if (item.type === 'hero') {
                     contentHTML = `
-                        <div class="headline hero-text" style="font-size: clamp(3rem, 8vw, 6rem);">${item.text}</div>
-                        <div class="subtext hero-subtext" style="font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase;">${item.subtext}</div>
+                        <div class="headline hero-text" style="font-size: clamp(6rem, 16vw, 12rem);">${item.text}</div>
+                        <div class="subtext hero-subtext" style="font-size: 3rem; letter-spacing: 3px; text-transform: uppercase;">${item.subtext}</div>
                     `;
                 } else if (item.type === 'stat') {
                     // Start Image logic
                     let imageHTML = '';
                     if (item.image) {
-                        imageHTML = `<img src="${item.image}" alt="${item.header}" style="max-height: 200px; display: block; margin: 0 auto 1rem auto;">`;
+                        const imgStr = item.image.trim();
+                        if (imgStr.startsWith('<svg') || imgStr.startsWith('<?xml')) {
+                             // It's raw SVG
+                             imageHTML = `<div class="svg-container" style="max-height: 200px; display: block; margin: 0 auto 1rem auto; width: 100%; display: flex; justify-content: center;">${item.image}</div>`;
+                        } else {
+                            // It's a URL or Base64
+                            imageHTML = `<img src="${item.image}" alt="${item.header}" style="max-height: 200px; display: block; margin: 0 auto 1rem auto;">`;
+                        }
                     }
                     // End Image logic
                     contentHTML = `
-                        ${imageHTML}
                         <div class="headline stat-header">${item.header}</div>
                         <div class="stat-value-container">
                             <span class="stat-value">${item.value}</span>
                             <span class="stat-unit">${item.unit}</span>
                         </div>
                         <div class="subtext stat-context">${item.context}</div>
+                        ${imageHTML}
                     `;
                 } else if (item.type === 'text') {
                     contentHTML = `
@@ -222,7 +229,7 @@
                     `;
                 } else if (item.type === 'outro') {
                     contentHTML = `
-                        <div class="headline outro-text">${item.text}</div>
+                        <div class="headline outro-text" style="font-size: clamp(6rem, 16vw, 12rem);">${item.text}</div>
                         <div class="subtext outro-subtext">${item.subtext}</div>
                     `;
                 }
@@ -257,6 +264,79 @@
                         delay: 0.2
                     });
                 } else {
+                    // Access the data item for this section
+                    const item = data[i];
+
+                if (item.animation === 'fadeInOut') {
+                     gsap.fromTo(content, {
+                        opacity: 0
+                    }, {
+                        opacity: 0, 
+                        keyframes: {
+                            "0%":   { opacity: 0, y: "20vh" },
+                            "40%":  { opacity: 1, y: 0 },   // Fully visible near center
+                            "60%":  { opacity: 1, y: 0 },   // Stay visible for a bit
+                            "100%": { opacity: 0, y: "-20vh" } // Fade out as it goes up
+                        },
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top bottom",   // When top of section hits bottom of viewport
+                            end: "bottom top",     // Wait until it hits top to fade out
+                            scrub: true            // Smooth scrubbing
+                        },
+                        ease: "none"
+                    });
+                } else if (item.animation === 'zoomReveal') {
+                    gsap.fromTo(content, {
+                        scale: 0.5,
+                        opacity: 0
+                    }, {
+                        keyframes: {
+                            "0%":   { scale: 0.5, opacity: 0 },
+                            "50%":  { scale: 1.2, opacity: 1 },
+                            "100%": { scale: 1.0, opacity: 1 }
+                        },
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top 90%",
+                            end: "bottom top",
+                            scrub: 1
+                        },
+                        ease: "none"
+                    });
+                } else if (item.animation === 'sideEntrance') {
+                    gsap.fromTo(content, {
+                        x: "-100vw",
+                        opacity: 0
+                    }, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top bottom",
+                            end: "center center", // Extend duration
+                            scrub: 1
+                        },
+                        x: 0,
+                        opacity: 1,
+                        ease: "power2.out"
+                    });
+                } else if (item.animation === 'slideRight') {
+                    gsap.fromTo(content, {
+                        x: "100vw",
+                        opacity: 0
+                    }, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top bottom",
+                            end: "center center", 
+                            scrub: 1
+                        },
+                        x: 0,
+                        opacity: 1,
+                        ease: "power2.out"
+                    });
+                } else {
+                    // Animation: 'slideUp' (Default)
+                    // explicitly check for 'slideUp' or fallback for undefined
                     gsap.fromTo(content, {
                         opacity: 0,
                         y: 150 // Start lower down
@@ -272,6 +352,7 @@
                         y: 0,
                         ease: "power2.out"
                     });
+                }
                 }
 
                 // *NO EXIT ANIMATION* - We removed the code that fades it out at "top -20%".
@@ -292,7 +373,14 @@
                 }
 
                 // 2. Value Highlighting ("Pop" Effect)
-                if (statValue) {
+                // Only apply if it's the default (slideUp) or fadeInOut. 
+                // Don't apply for special entrances to keep them clean.
+                let currentAnim; 
+                if (data[i]) {
+                    currentAnim = data[i].animation;
+                }
+                
+                if (statValue && (currentAnim === 'slideUp' || currentAnim === 'fadeInOut' || !currentAnim)) {
                     gsap.fromTo(statValue, {
                         scale: 1,
                         filter: "brightness(1)",
@@ -300,15 +388,15 @@
                     }, {
                         scrollTrigger: {
                             trigger: section,
-                            start: "center 60%", // When center of section hits 60% viewport (sweet spot)
-                            end: "center 40%",
+                            start: "center 80%", // When center of section hits 60% viewport (sweet spot)
+                            end: "center 60%",
                             scrub: 0, // No scrub, just a trigger animation
                             toggleActions: "play reverse play reverse"
                         },
                         scale: 1.25,
                         filter: "brightness(1.2)",
                         color: "#8cd140", // Slightly lighter/brighter green pop
-                        duration: 0.4,
+                        duration: 1.0,    // Slower
                         ease: "back.out(1.7)"
                     });
                 }

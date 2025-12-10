@@ -9,31 +9,32 @@ import json
 import mimetypes
 import os
 
-TEMPLATE_FILE = "docs/template.html"
+TEMPLATE_FILE = "template.html"
 DATA_FILE = "data.json"
-OUTPUT_FILE = "docs/index.html"
-ASSETS_DIR = "docs/assets"
+OUTPUT_FILE = "index.html"
+ASSETS_DIR = "assets"
 
 def get_base64_image(image_path):
     """
     Reads an image file and returns a base64 data URI.
     """
-    # Image path from data.json is likely 'assets/foo.svg'
+    # Image path from data.json might be 'foo.svg' or 'assets/foo.svg'
     
-    # Check if the path starts with docs/, if not, assume it's relative to docs/ 
-    # (since that's where assets live)
-    full_path = image_path
-    if not image_path.startswith("docs/"):
-        full_path = os.path.join("docs", image_path)
+    full_path = os.path.join(ASSETS_DIR, image_path)
     
     if not os.path.exists(full_path):
-        # Try raw path just in case
+        # Fallback: check if the path works as-is (e.g. if user included assets/)
         if os.path.exists(image_path):
             full_path = image_path
         else:
-            print(f"Warning: Image not found: {full_path} (or {image_path})")
+            print(f"Warning: Image not found: {full_path}")
             return image_path # Return original info if not found
 
+
+    if full_path.lower().endswith(".svg"):
+        # SVG: Read as text/XML
+        with open(full_path, "r", encoding="utf-8") as f:
+            return f.read()
 
     mime_type, _ = mimetypes.guess_type(full_path)
     if not mime_type:

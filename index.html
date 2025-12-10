@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Wrapped</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --accent-color: #79b436;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        html.lenis {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        /* Container for all scrollytelling sections */
+        #app {
+            width: 100%;
+            position: relative;
+        }
+
+        /* Individual Story Block */
+        .story-block {
+            /* 150vh creates the "slow" and "high-res" feel by forcing more scroll distance */
+            min-height: 150vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+            box-sizing: border-box;
+            will-change: transform, opacity;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .headline {
+            font-size: clamp(2.5rem, 5vw, 5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            /* Adjusted for light background: Dark gray to black gradient for premium look */
+            background: linear-gradient(45deg, #000, #333);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Specific styles for stats */
+        .stat-value-container {
+            margin: 2rem 0;
+            perspective: 1000px;
+            /* For 3D pop effect */
+        }
+
+        .stat-value {
+            font-size: clamp(5rem, 12vw, 10rem);
+            font-weight: 800;
+            color: var(--accent-color);
+            display: inline-block;
+            /* Changed to inline-block for transforms */
+            line-height: 1;
+            text-shadow: 0 10px 30px rgba(121, 180, 54, 0.2);
+            will-change: transform, color;
+        }
+
+        .stat-unit {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 300;
+            color: var(--accent-color);
+            display: block;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtext {
+            font-size: clamp(2.4rem, 4vw, 3.6rem);
+            font-weight: 300;
+            color: var(--accent-color);
+            /* The requested #79b436 */
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            will-change: transform, opacity;
+        }
+
+        .hero-subtext,
+        .outro-subtext {
+            color: var(--accent-color);
+        }
+
+        /* Scroll Progress Indicator */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 6px;
+            background: var(--accent-color);
+            width: 0%;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="progress-bar"></div>
+    <div id="app"></div>
+
+    <!-- Data Source -->
+    <script>
+window.wrappedData = [
+    {
+        "type": "hero",
+        "text": "2025",
+        "subtext": "Your Company Wrapped"
+    },
+    {
+        "type": "stat",
+        "header": "We've crimped",
+        "value": "27,000",
+        "unit": "pins",
+        "context": "That's like shaking hands with everyone in Key West!",
+        "image": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n\t width=\"606.162px\" height=\"399.592px\" viewBox=\"292.192 136.948 606.162 399.592\"\n\t enable-background=\"new 292.192 136.948 606.162 399.592\" xml:space=\"preserve\">\n<path fill=\"#79b533\" d=\"M897.117,305.66l-80.168-137.302c-2.258-3.873-6.998-5.496-11.168-3.853c-0.215,0.087-22.293,8.749-45.516,8.749\n\tc-8.938,0-20.092-5.395-33.021-11.638c-17.814-8.601-39.986-19.31-65.803-19.31c-23.668,0-43.725,6.755-60.408,16.548\n\tc-17.74-12.487-37.413-19.781-58.582-21.572c-25.708-2.162-48.708,6.62-67.196,13.692c-13.396,5.132-24.94,9.618-33.884,8.803\n\tc-23.014-1.946-44.418-12.446-44.621-12.548c-4-1.987-8.863-0.761-11.443,2.903l-91.463,130.042\n\tc-2.721,3.859-2.014,9.167,1.623,12.184l97.194,80.566l-0.249,0.249c-7.18,7.187-11.14,16.724-11.14,26.88\n\tc0,10.163,3.96,19.714,11.133,26.887c7.18,7.173,16.73,11.133,26.887,11.133c2.27,0,4.506-0.229,6.694-0.619\n\tc0.048,10.089,3.994,19.565,11.127,26.704c7.18,7.173,16.729,11.134,26.887,11.134c3.26,0,6.452-0.445,9.53-1.253\n\tc0.538,8.965,4.176,17.773,11.012,24.597c7.18,7.18,16.723,11.126,26.88,11.126c2.565,0,5.085-0.249,7.543-0.733\n\tc16.805,20.952,38.444,27.513,57.585,27.513c12.434,0,23.796-2.755,32.099-6.103c6.324,2.075,13.209,3.206,20.18,3.206\n\tc15.154,0,29.338-5.186,38.867-13.773c4.533,1.859,9.424,2.843,14.475,2.843c10.164,0,19.707-3.947,26.873-11.127\n\tc5.469-5.462,9.053-12.284,10.459-19.707c5.787,3.273,12.246,4.944,18.717,4.944c9.727,0,19.479-3.705,26.881-11.106\n\tc6.357-6.358,10.176-14.589,10.979-23.432c3.563,1.091,7.328,1.657,11.16,1.657c10.156,0,19.713-3.954,26.879-11.127\n\tc7.18-7.18,11.141-16.724,11.141-26.88c0-10.163-3.961-19.714-11.141-26.887l-15.047-15.053l95.383-66.348\n\tC898.349,314.961,899.5,309.729,897.117,305.66z M433.369,414.136c-3.758,3.771-8.762,5.833-14.076,5.833\n\tc-5.321,0-10.312-2.068-14.083-5.833c-3.758-3.758-5.826-8.756-5.826-14.083c0-5.314,2.075-10.305,5.826-14.076l17.255-17.249\n\tc3.766-3.765,8.763-5.832,14.077-5.832c5.327,0,10.324,2.074,14.083,5.832c3.765,3.765,5.825,8.756,5.825,14.076\n\tc0,5.314-2.074,10.312-5.825,14.077L433.369,414.136z M484.529,444.915l-6.445,6.459c-3.766,3.759-8.763,5.819-14.076,5.819\n\tc-5.321,0-10.318-2.074-14.084-5.819c-3.765-3.771-5.832-8.769-5.832-14.083c0-5.32,2.074-10.318,5.832-14.083l38.809-38.814\n\tc3.765-3.758,8.762-5.826,14.083-5.826c5.313,0,10.318,2.074,14.083,5.833c3.758,3.758,5.826,8.763,5.826,14.076\n\tc0,5.308-2.068,10.284-5.807,14.05l-32.361,32.376C484.55,444.902,484.543,444.915,484.529,444.915z M511.43,491.684\n\tc-5.314,0-10.312-2.074-14.077-5.818c-7.752-7.746-7.752-20.354-0.02-28.133l32.362-32.369c0.02-0.027,0.04-0.054,0.061-0.067\n\tl6.412-6.419c3.758-3.758,8.755-5.818,14.083-5.818c5.307,0,10.312,2.074,14.076,5.832c3.758,3.759,5.826,8.763,5.826,14.076\n\tc0,5.314-2.075,10.312-5.833,14.077l-38.808,38.821C521.748,489.609,516.75,491.684,511.43,491.684z M579.354,505.545\n\tc1.266,4.304,3.846,8.264,7.961,12.09c-14.266,2.391-34.861,1.435-51.464-16.724c0.842-0.7,1.678-1.448,2.466-2.236l38.814-38.814\n\tc0.478-0.478,0.909-0.99,1.354-1.502c13.558,10.669,10.547,16.01,5.92,24.152C580.922,488.619,576.599,496.244,579.354,505.545z\n\t M801.343,411.853c3.75,3.765,5.818,8.763,5.818,14.083c0,5.308-2.074,10.305-5.818,14.076c-3.771,3.772-8.764,5.819-14.084,5.819\n\tc-5.314,0-10.318-2.067-14.082-5.819l-89.963-89.954c-3.527-3.529-9.26-3.529-12.795,0c-3.537,3.522-3.537,9.261,0,12.797\n\tl81.857,81.858c0.014,0.027,0.027,0.041,0.041,0.055c3.771,3.765,5.84,8.762,5.84,14.076c0,5.32-2.082,10.318-5.84,14.083\n\tc-3.766,3.758-8.762,5.826-14.076,5.826s-10.313-2.075-14.076-5.826l-15.066-15.06c-0.014-0.014-0.027-0.041-0.041-0.041\n\tc0-0.013-0.014-0.013-0.027-0.026l-53.592-53.592c-3.529-3.529-9.26-3.529-12.797,0c-3.527,3.522-3.527,9.261,0,12.797l53.66,53.673\n\tc3.738,3.771,5.785,8.741,5.785,14.035c0,5.321-2.082,10.318-5.826,14.084c-3.766,3.771-8.762,5.825-14.076,5.825h-0.014\n\tc-5.314,0-10.305-2.074-14.076-5.825l-32.908-32.908c-3.529-3.529-9.268-3.529-12.803,0c-3.529,3.536-3.529,9.274,0,12.804\n\tl30.172,30.166c-6.154,4.169-14.736,6.695-23.727,6.695c-5.961,0-11.787-1.078-16.879-3.092\n\tc-12.783-6.722-14.904-10.931-15.248-12.063c-0.525-1.785,1.018-4.694,3.436-8.958c7.658-13.47,13.348-29.385-13.053-49.254\n\tc0.741-2.983,1.172-6.068,1.172-9.227c0-10.164-3.953-19.7-11.133-26.88c-7.173-7.18-16.724-11.141-26.88-11.141\n\tc-3.26,0-6.452,0.451-9.53,1.253c-0.546-9.301-4.385-17.956-11.025-24.59c-7.173-7.173-16.724-11.133-26.88-11.133\n\ts-19.707,3.96-26.887,11.133l-2.418,2.418c-1.604-6.796-5.018-13.032-10.076-18.098c-7.173-7.18-16.723-11.126-26.887-11.126\n\tc-10.156,0-19.7,3.946-26.879,11.126l-4.196,4.196c-0.216-0.222-0.411-0.444-0.653-0.66l-91.349-75.716l82.384-117.117\n\tc9.126,3.758,25.883,9.665,44,11.194c13.012,1.057,27.048-4.263,41.886-9.935c17.626-6.749,37.582-14.42,59.195-12.561\n\tc15.706,1.327,30.449,6.271,44.021,14.608c-17.599,14.05-30.221,30.78-38.195,43.435c-4.33,6.876-42.061,68.125-32.133,99.046\n\tc2.364,7.349,7.22,12.703,14.049,15.491c5.005,2.047,10.116,3.078,15.194,3.078c23.877,0,41.953-21.997,59.417-43.267\n\tc12.791-15.579,25.984-31.628,38.855-35.07l82.275,82.29l8.715,8.709l45.496,45.502c0.014,0,0.014,0,0.014,0L801.343,411.853z\n\t M786.074,370.984l-48.85-48.857c-0.014-0.006-0.014-0.006-0.02-0.013l-85.529-85.53c-1.705-1.704-4.021-2.653-6.398-2.653\n\tc-0.195,0-0.412,0.006-0.607,0.02c-21.848,1.455-38.895,22.206-55.382,42.276c-14.804,18.017-30.112,36.646-45.428,36.646\n\tc-2.755,0-5.482-0.565-8.352-1.737c-1.361-0.56-2.748-1.462-3.645-4.264c-4.957-15.437,11.874-54.729,30.221-83.859\n\tc14.729-23.377,47.22-62.609,99.357-62.609c21.674,0,40.922,9.308,57.928,17.518c14.307,6.903,27.816,13.43,40.896,13.43\n\tc18.186,0,35.379-4.472,44.781-7.442l72.215,123.65L786.074,370.984z\"/>\n<text transform=\"matrix(1 0 0 1 258.5195 774.5371)\" font-family=\"'Arial-BoldMT'\" font-size=\"33.6756\">Created by David</text>\n<text transform=\"matrix(1 0 0 1 258.5195 808.2129)\" font-family=\"'Arial-BoldMT'\" font-size=\"33.6756\">from the Noun Project</text>\n</svg>\n",
+        "animation": "slideUp"
+    },
+    {
+        "type": "stat",
+        "header": "Coffee consumed",
+        "value": "4,500",
+        "unit": "gallons",
+        "context": "fueling innovation, one cup at a time.",
+        "animation": "fadeInOut"
+    },
+    {
+        "type": "text",
+        "text": "But it wasn't just about the numbers..."
+    },
+    {
+        "type": "stat",
+        "header": "New hires",
+        "value": "12",
+        "unit": "legends",
+        "context": "Welcome to the family!"
+    },
+    {
+        "type": "stat",
+        "header": "Zoom Reveal",
+        "value": "100%",
+        "unit": "focus",
+        "context": "Zooming into the details.",
+        "animation": "zoomReveal"
+    },
+    {
+        "type": "stat",
+        "context": "Sliding into the DMs.",
+        "animation": "sideEntrance"
+    },
+    {
+        "type": "stat",
+        "header": "Slide Right",
+        "value": "Right",
+        "unit": "Left",
+        "context": "Coming from the other side.",
+        "animation": "slideRight"
+    },
+    {
+        "type": "outro",
+        "text": "Here's to 2026!",
+        "subtext": "Let's make it even better."
+    }
+];
+</script>
+
+    <!-- Lenis for Smooth Scrolling -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <!-- GSAP Libraries via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // LOGIC SECTION
+        document.addEventListener("DOMContentLoaded", () => {
+            gsap.registerPlugin(ScrollTrigger);
+            const app = document.getElementById('app');
+
+            // --- SMOTH SCROLL SETUP (LENIS) ---
+            const lenis = new Lenis({
+                duration: 1.5, // Even slower/smoother
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+            });
+
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => {
+                lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+
+            // --- CONTENT RENDERING ---
+            const data = window.wrappedData || [];
+
+            data.forEach((item, index) => {
+                const section = document.createElement('section');
+                section.className = `story-block type-${item.type}`;
+                section.id = `block-${index}`;
+                section.dataset.bgcolor = '#ffffff';
+
+                let contentHTML = '';
+
+                if (item.type === 'hero') {
+                    contentHTML = `
+                        <div class="headline hero-text" style="font-size: clamp(6rem, 16vw, 12rem);">${item.text}</div>
+                        <div class="subtext hero-subtext" style="font-size: 3rem; letter-spacing: 3px; text-transform: uppercase;">${item.subtext}</div>
+                    `;
+                } else if (item.type === 'stat') {
+                    // Start Image logic
+                    let imageHTML = '';
+                    if (item.image) {
+                        const imgStr = item.image.trim();
+                        if (imgStr.startsWith('<svg') || imgStr.startsWith('<?xml')) {
+                             // It's raw SVG
+                             imageHTML = `<div class="svg-container" style="max-height: 200px; display: block; margin: 0 auto 1rem auto; width: 100%; display: flex; justify-content: center;">${item.image}</div>`;
+                        } else {
+                            // It's a URL or Base64
+                            imageHTML = `<img src="${item.image}" alt="${item.header}" style="max-height: 200px; display: block; margin: 0 auto 1rem auto;">`;
+                        }
+                    }
+                    // End Image logic
+                    contentHTML = `
+                        <div class="headline stat-header">${item.header}</div>
+                        <div class="stat-value-container">
+                            <span class="stat-value">${item.value}</span>
+                            <span class="stat-unit">${item.unit}</span>
+                        </div>
+                        <div class="subtext stat-context">${item.context}</div>
+                        ${imageHTML}
+                    `;
+                } else if (item.type === 'text') {
+                    contentHTML = `
+                        <div class="headline text-only" style="font-weight: 500;">${item.text}</div>
+                    `;
+                } else if (item.type === 'outro') {
+                    contentHTML = `
+                        <div class="headline outro-text" style="font-size: clamp(6rem, 16vw, 12rem);">${item.text}</div>
+                        <div class="subtext outro-subtext">${item.subtext}</div>
+                    `;
+                }
+
+                section.innerHTML = `
+                    <div class="content-wrapper">
+                        ${contentHTML}
+                    </div>
+                `;
+                app.appendChild(section);
+            });
+
+            // --- ANIMATION SETUP ---
+            const sections = gsap.utils.toArray('.story-block');
+
+            sections.forEach((section, i) => {
+                const isHero = i === 0;
+                const content = section.querySelector('.content-wrapper');
+                const statValue = section.querySelector('.stat-value');
+                const subtexts = section.querySelectorAll('.subtext, .stat-unit');
+
+                // 1. Entrance / Flow
+                // Continuous flow: Things slide up and stay visible until they go off top naturally.
+                // We still want them to "enter" gracefully though.
+                if (isHero) {
+                    gsap.set(content, { opacity: 0, y: 50 });
+                    gsap.to(content, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1.5,
+                        ease: "power3.out",
+                        delay: 0.2
+                    });
+                } else {
+                    // Access the data item for this section
+                    const item = data[i];
+
+                if (item.animation === 'fadeInOut') {
+                     gsap.fromTo(content, {
+                        opacity: 0
+                    }, {
+                        opacity: 0, 
+                        keyframes: {
+                            "0%":   { opacity: 0, y: "20vh" },
+                            "40%":  { opacity: 1, y: 0 },   // Fully visible near center
+                            "60%":  { opacity: 1, y: 0 },   // Stay visible for a bit
+                            "100%": { opacity: 0, y: "-20vh" } // Fade out as it goes up
+                        },
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top bottom",   // When top of section hits bottom of viewport
+                            end: "bottom top",     // Wait until it hits top to fade out
+                            scrub: true            // Smooth scrubbing
+                        },
+                        ease: "none"
+                    });
+                } else if (item.animation === 'zoomReveal') {
+                    gsap.fromTo(content, {
+                        scale: 0.5,
+                        opacity: 0
+                    }, {
+                        keyframes: {
+                            "0%":   { scale: 0.5, opacity: 0 },
+                            "50%":  { scale: 1.2, opacity: 1 },
+                            "100%": { scale: 1.0, opacity: 1 }
+                        },
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top 90%",
+                            end: "bottom top",
+                            scrub: 1
+                        },
+                        ease: "none"
+                    });
+                } else if (item.animation === 'sideEntrance') {
+                    gsap.fromTo(content, {
+                        x: "-100vw",
+                        opacity: 0
+                    }, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top bottom",
+                            end: "center center", // Extend duration
+                            scrub: 1
+                        },
+                        x: 0,
+                        opacity: 1,
+                        ease: "power2.out"
+                    });
+                } else if (item.animation === 'slideRight') {
+                    gsap.fromTo(content, {
+                        x: "100vw",
+                        opacity: 0
+                    }, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top bottom",
+                            end: "center center", 
+                            scrub: 1
+                        },
+                        x: 0,
+                        opacity: 1,
+                        ease: "power2.out"
+                    });
+                } else {
+                    // Animation: 'slideUp' (Default)
+                    // explicitly check for 'slideUp' or fallback for undefined
+                    gsap.fromTo(content, {
+                        opacity: 0,
+                        y: 150 // Start lower down
+                    }, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top 80%", // Start animating when section top hits 80% viewport
+                            end: "top 40%",   // Fully visible by 40% viewport
+                            scrub: 1,
+                            toggleActions: "play none none reverse"
+                        },
+                        opacity: 1,
+                        y: 0,
+                        ease: "power2.out"
+                    });
+                }
+                }
+
+                // *NO EXIT ANIMATION* - We removed the code that fades it out at "top -20%".
+
+                // IMAGE ANIMATION (Simple pop in)
+                const img = content.querySelector('img');
+                if (img) {
+                    gsap.fromTo(img, { scale: 0.8, opacity: 0 }, {
+                        scale: 1,
+                        opacity: 1,
+                        duration: 0.5,
+                        ease: "back.out(1.7)",
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top 70%",
+                        }
+                    });
+                }
+
+                // 2. Value Highlighting ("Pop" Effect)
+                // Only apply if it's the default (slideUp) or fadeInOut. 
+                // Don't apply for special entrances to keep them clean.
+                let currentAnim; 
+                if (data[i]) {
+                    currentAnim = data[i].animation;
+                }
+                
+                if (statValue && (currentAnim === 'slideUp' || currentAnim === 'fadeInOut' || !currentAnim)) {
+                    gsap.fromTo(statValue, {
+                        scale: 1,
+                        filter: "brightness(1)",
+                        color: "#79b436"
+                    }, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "center 80%", // When center of section hits 60% viewport (sweet spot)
+                            end: "center 60%",
+                            scrub: 0, // No scrub, just a trigger animation
+                            toggleActions: "play reverse play reverse"
+                        },
+                        scale: 1.25,
+                        filter: "brightness(1.2)",
+                        color: "#8cd140", // Slightly lighter/brighter green pop
+                        duration: 1.0,    // Slower
+                        ease: "back.out(1.7)"
+                    });
+                }
+
+                // 3. Subtle Background Text Animation
+                // Parallax effect for subtext to make it feel detached and "floaty"
+                if (subtexts.length > 0) {
+                    gsap.to(subtexts, {
+                        y: -30, // Move up slightly faster than container
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: section,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true
+                        }
+                    });
+                }
+            });
+
+            // Global Progress Bar
+            gsap.to('.progress-bar', {
+                width: '100%',
+                scrollTrigger: {
+                    trigger: '#app',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 0
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

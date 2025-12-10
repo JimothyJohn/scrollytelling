@@ -10,7 +10,8 @@
         "value": "27,000",
         "unit": "pins",
         "context": "That's like shaking hands with everyone in Key West!",
-        "image": "assets/graphic-pens.svg"
+        "image": "handshake.svg",
+        "animation": "slideUp"
     },
     {
         "type": "stat",
@@ -18,7 +19,7 @@
         "value": "4,500",
         "unit": "gallons",
         "context": "fueling innovation, one cup at a time.",
-        "image": "assets/graphic-coffee.svg"
+        "animation": "fadeInOut"
     },
     {
         "type": "text",
@@ -30,6 +31,27 @@
         "value": "12",
         "unit": "legends",
         "context": "Welcome to the family!"
+    },
+    {
+        "type": "stat",
+        "header": "Zoom Reveal",
+        "value": "100%",
+        "unit": "focus",
+        "context": "Zooming into the details.",
+        "animation": "zoomReveal"
+    },
+    {
+        "type": "stat",
+        "context": "Sliding into the DMs.",
+        "animation": "sideEntrance"
+    },
+    {
+        "type": "stat",
+        "header": "Slide Right",
+        "value": "Right",
+        "unit": "Left",
+        "context": "Coming from the other side.",
+        "animation": "slideRight"
     },
     {
         "type": "outro",

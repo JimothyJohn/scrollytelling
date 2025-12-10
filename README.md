@@ -1,26 +1,22 @@
 # Scrollytelling
 
-A template to create a scrollytail of datapoints with context.
+A template to create a scrollytale of datapoints with context.
 
 ## A markdown badge for a link to a demo on Github pages:
 [Demo](https://jimothyjohn.github.io/scrollytelling/)
 
 ## Features
 
-- Just one file (coming soon). 100% portable (assuming you have an OS)
+- Just one HTML file. 100% portable (assuming you have an OS)
+
+- Canned animation features
 
 ## How-to
 
-Put your data into [index.html](docs/index.html#L156)
+1. Put your graphics in [assets/](assets/)
 
-```javascript
-    <script>
-        window.wrappedData = [
-            {
-                type: "hero",
-                text: "2025",
-                subtext: "Your Thing Wrapped",
-            }
-        ]
-    </script>
-``` 
+2. Add your data to [data.json](data.json)
+
+3. Run [./build.py](build.py) to generate [index.html](index.html)
+
+4. Enjoy your scrollytale!

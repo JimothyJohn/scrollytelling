@@ -1,6 +1,0 @@
-<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="400" height="300" rx="20" fill="#2A2A2A"/>
-<path d="M140 100H260V220C260 231.046 251.046 240 240 240H160C148.954 240 140 231.046 140 220V100Z" stroke="#FF4D4D" stroke-width="10"/>
-<path d="M260 120H280C291.046 120 300 128.954 300 140V160C300 171.046 291.046 180 280 180H260" stroke="#FF4D4D" stroke-width="10"/>
-<text x="50%" y="90%" dominant-baseline="middle" text-anchor="middle" fill="#aaa" font-family="sans-serif" font-size="20">150kg Coffee</text>
-</svg>
