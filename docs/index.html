@@ -12,9 +12,13 @@
 
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-            --accent-color: #79b436;
+            /* SCOPE.md: Colors */
+            --bg-color: #f7f7f7;
+            /* "Subtle off-white" - actually using a very light grey/white mix */
+            --text-color: #5e6565;
+            /* Gray text */
+            --accent-color: #79b533;
+            /* Green accent */
         }
 
         body,
@@ -23,29 +27,11 @@
             padding: 0;
             width: 100%;
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-color);
+            background: linear-gradient(135deg, #ffffff 0%, #f4f4f4 100%);
+            /* Subtle off-white diagonal gradient */
+            background-attachment: fixed;
             color: var(--text-color);
             overflow-x: hidden;
-        }
-
-        html.lenis {
-            height: auto;
-        }
-
-        .lenis.lenis-smooth {
-            scroll-behavior: auto;
-        }
-
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
-        }
-
-        .lenis.lenis-stopped {
-            overflow: hidden;
-        }
-
-        .lenis.lenis-scrolling iframe {
-            pointer-events: none;
         }
 
         /* Container for all scrollytelling sections */
@@ -56,8 +42,7 @@
 
         /* Individual Story Block */
         .story-block {
-            /* 150vh creates the "slow" and "high-res" feel by forcing more scroll distance */
-            min-height: 150vh;
+            min-height: 100vh;
             width: 100%;
             display: flex;
             align-items: center;
@@ -65,13 +50,80 @@
             position: relative;
             padding: 2rem;
             box-sizing: border-box;
-            will-change: transform, opacity;
+
+            /* CSS Scroll-Driven Animation Trigger - View Timeline */
+            view-timeline-name: --block-timeline;
+            view-timeline-axis: block;
         }
 
         .content-wrapper {
             max-width: 900px;
             text-align: center;
             z-index: 2;
+
+            /* Entrance and Exit Animations linked to the scroll timeline */
+            animation-timeline: --block-timeline;
+            animation-name: fade-in-out;
+            animation-fill-mode: both;
+
+            /* The range where the animation happens:
+               0% - 20%: Entry (Fade In)
+               20% - 80%: Active/Visible
+               80% - 100%: Exit (Fade Out) 
+            */
+            animation-range: entry 0% entry 100%, exit 0% exit 100%;
+        }
+
+        /* Fallback / More specific animation definition for valid properties */
+        @keyframes fade-in-out {
+            entry 0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            entry 100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            exit 0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            exit 100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        /* Active "Alive" State - Continuous subtle float */
+        .content-wrapper.active-anim {
+            animation: float 6s ease-in-out infinite, fade-in-out auto linear;
+            /* Combine time-based and scroll-based */
+            animation-composition: add;
+            /* Ensure they layer nicely */
+        }
+
+        /* Note: 'animation-composition' support varies. 
+           Alternative strategy: Wrap content in an inner div for the float. */
+
+        .animated-inner {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         .headline {
@@ -79,18 +131,17 @@
             font-weight: 800;
             margin-bottom: 1rem;
             line-height: 1.1;
-            /* Adjusted for light background: Dark gray to black gradient for premium look */
-            background: linear-gradient(45deg, #000, #333);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-color);
+            /* Main text color */
         }
 
-        /* Specific styles for stats */
+        /* Hero specific override to be darker/stronger? Or keep unifed? 
+           SCOPE: "headline and subtext should animate slightly differently"
+        */
+
         .stat-value-container {
             margin: 2rem 0;
-            perspective: 1000px;
-            /* For 3D pop effect */
+            position: relative;
         }
 
         .stat-value {
@@ -98,10 +149,7 @@
             font-weight: 800;
             color: var(--accent-color);
             display: inline-block;
-            /* Changed to inline-block for transforms */
             line-height: 1;
-            text-shadow: 0 10px 30px rgba(121, 180, 54, 0.2);
-            will-change: transform, color;
         }
 
         .stat-unit {
@@ -117,136 +165,149 @@
         .subtext {
             font-size: clamp(1.2rem, 2vw, 1.8rem);
             font-weight: 300;
-            color: var(--accent-color);
-            /* The requested #79b436 */
+            color: var(--text-color);
             margin-bottom: 2rem;
             line-height: 1.5;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-            will-change: transform, opacity;
         }
 
-        .hero-subtext,
-        .outro-subtext {
-            color: var(--accent-color);
+        /* Staggered animation for text elements (Standard CSS delay) */
+        .headline {
+            animation-delay: 0s;
         }
 
-        /* Scroll Progress Indicator */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 6px;
-            background: var(--accent-color);
-            width: 0%;
-            z-index: 100;
+        .stat-value-container {
+            animation-delay: 0.1s;
+        }
+
+        .subtext {
+            animation-delay: 0.2s;
+        }
+
+        .hero-subtext {
+            color: var(--text-color);
+        }
+
+        img.story-graphic {
+            max-height: 300px;
+            display: block;
+            margin: 0 auto 2rem auto;
+            width: auto;
+            max-width: 80%;
+        }
+
+        /* Scroll Prompt */
+        .scroll-prompt {
+            margin-top: 2rem;
+            font-size: 1rem;
+            opacity: 0.5;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="progress-bar"></div>
     <div id="app"></div>
 
     <!-- Data Source -->
     <script>
-window.wrappedData = [
-    {
-        "type": "hero",
-        "text": "2025",
-        "subtext": "Your Company Wrapped"
-    },
-    {
-        "type": "stat",
-        "header": "We've crimped",
-        "value": "27,000",
-        "unit": "pins",
-        "context": "That's enough to circle the block 50 times!",
-        "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiByeD0iMjAiIGZpbGw9IiMyQTJBMkEiLz4KPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTUwIiByPSI4MCIgZmlsbD0iI0ZGNEQ0RCIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTE1MCAyMDBMMjUwIDEwMCIgc3Ryb2tlPSIjRkY0RDREIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTE1MCAxMDBMMjUwIDIwMCIgc3Ryb2tlPSIjRkY0RDREIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHRleHQgeD0iNTAlIiB5PSI5MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNhYWEiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwIj4yNywwMDAgUGVuczwvdGV4dD4KPC9zdmc+Cg=="
-    },
-    {
-        "type": "stat",
-        "header": "Coffee consumed",
-        "value": "4,500",
-        "unit": "gallons",
-        "context": "fueling innovation, one cup at a time.",
-        "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiByeD0iMjAiIGZpbGw9IiMyQTJBMkEiLz4KPHBhdGggZD0iTTE0MCAxMDBIMjYwVjIyMEMyNjAgMjMxLjA0NiAyNTEuMDQ2IDI0MCAyNDAgMjQwSDE2MEMxNDguOTU0IDI0MCAxNDAgMjMxLjA0NiAxNDAgMjIwVjEwMFoiIHN0cm9rZT0iI0ZGNEQ0RCIgc3Ryb2tlLXdpZHRoPSIxMCIvPgo8cGF0aCBkPSJNMjYwIDEyMEgyODBDMjkxLjA0NiAxMjAgMzAwIDEyOC45NTQgMzAwIDE0MFYxNjBDMzAwIDE3MS4wNDYgMjkxLjA0NiAxODAgMjgwIDE4MEgyNjAiIHN0cm9rZT0iI0ZGNEQ0RCIgc3Ryb2tlLXdpZHRoPSIxMCIvPgo8dGV4dCB4PSI1MCUiIHk9IjkwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2FhYSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiPjE1MGtnIENvZmZlZTwvdGV4dD4KPC9zdmc+Cg=="
-    },
-    {
-        "type": "text",
-        "text": "But it wasn't just about the numbers..."
-    },
-    {
-        "type": "stat",
-        "header": "New hires",
-        "value": "12",
-        "unit": "legends",
-        "context": "Welcome to the family!"
-    },
-    {
-        "type": "outro",
-        "text": "Here's to 2026!",
-        "subtext": "Let's make it even better."
-    }
-];
-</script>
-
-    <!-- Lenis for Smooth Scrolling -->
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
-    <!-- GSAP Libraries via CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+        window.wrappedData = [
+            {
+                "type": "hero",
+                "text": "2025",
+                "subtext": "Your Company Wrapped",
+                "animation": "float"
+            },
+            {
+                "type": "stat",
+                "header": "We've crimped",
+                "value": "27,000",
+                "unit": "pins",
+                "context": "That's like shaking hands with everyone in Key West!",
+                "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiByeD0iMjAiIGZpbGw9IiMyQTJBMkEiLz4KPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTUwIiByPSI4MCIgZmlsbD0iI0ZGNEQ0RCIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTE1MCAyMDBMMjUwIDEwMCIgc3Ryb2tlPSIjRkY0RDREIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTE1MCAxMDBMMjUwIDIwMCIgc3Ryb2tlPSIjRkY0RDREIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHRleHQgeD0iNTAlIiB5PSI5MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNhYWEiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwIj4yNywwMDAgUGVuczwvdGV4dD4KPC9zdmc+Cg==",
+                "animation": "slide-up"
+            },
+            {
+                "type": "stat",
+                "header": "Coffee consumed",
+                "value": "4,500",
+                "unit": "gallons",
+                "context": "fueling innovation, one cup at a time.",
+                "image": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiByeD0iMjAiIGZpbGw9IiMyQTJBMkEiLz4KPHBhdGggZD0iTTE0MCAxMDBIMjYwVjIyMEMyNjAgMjMxLjA0NiAyNTEuMDQ2IDI0MCAyNDAgMjQwSDE2MEMxNDguOTU0IDI0MCAxNDAgMjMxLjA0NiAxNDAgMjIwVjEwMFoiIHN0cm9rZT0iI0ZGNEQ0RCIgc3Ryb2tlLXdpZHRoPSIxMCIvPgo8cGF0aCBkPSJNMjYwIDEyMEgyODBDMjkxLjA0NiAxMjAgMzAwIDEyOC45NTQgMzAwIDE0MFYxNjBDMzAwIDE3MS4wNDYgMjkxLjA0NiAxODAgMjgwIDE4MEgyNjAiIHN0cm9rZT0iI0ZGNEQ0RCIgc3Ryb2tlLXdpZHRoPSIxMCIvPgo8dGV4dCB4PSI1MCUiIHk9IjkwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2FhYSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiPjE1MGtnIENvZmZlZTwvdGV4dD4KPC9zdmc+Cg==",
+                "animation": "zoom-in"
+            },
+            {
+                "type": "text",
+                "text": "But it wasn't just about the numbers..."
+            },
+            {
+                "type": "stat",
+                "header": "New hires",
+                "value": "12",
+                "unit": "legends",
+                "context": "Welcome to the family!"
+            },
+            {
+                "type": "outro",
+                "text": "Here's to 2026!",
+                "subtext": "Let's make it even better."
+            }
+        ];
+    </script>
 
     <script>
-        // LOGIC SECTION
         document.addEventListener("DOMContentLoaded", () => {
-            gsap.registerPlugin(ScrollTrigger);
             const app = document.getElementById('app');
-
-            // --- SMOTH SCROLL SETUP (LENIS) ---
-            const lenis = new Lenis({
-                duration: 1.5, // Even slower/smoother
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                gestureDirection: 'vertical',
-                smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: false,
-                touchMultiplier: 2,
-            });
-
-            lenis.on('scroll', ScrollTrigger.update);
-            gsap.ticker.add((time) => {
-                lenis.raf(time * 1000);
-            });
-            gsap.ticker.lagSmoothing(0);
-
-            // --- CONTENT RENDERING ---
             const data = window.wrappedData || [];
 
             data.forEach((item, index) => {
                 const section = document.createElement('section');
                 section.className = `story-block type-${item.type}`;
                 section.id = `block-${index}`;
-                section.dataset.bgcolor = '#ffffff';
 
                 let contentHTML = '';
 
+                // Hero & Outro
                 if (item.type === 'hero') {
                     contentHTML = `
                         <div class="headline hero-text" style="font-size: clamp(3rem, 8vw, 6rem);">${item.text}</div>
                         <div class="subtext hero-subtext" style="font-size: 1.5rem; letter-spacing: 3px; text-transform: uppercase;">${item.subtext}</div>
+                        <div class="scroll-prompt">↓ Scroll Down ↓</div>
                     `;
-                } else if (item.type === 'stat') {
-                    // Start Image logic
+                } else if (item.type === 'outro') {
+                    contentHTML = `
+                        <div class="headline outro-text">${item.text}</div>
+                        <div class="subtext outro-subtext">${item.subtext}</div>
+                    `;
+                }
+                // Stats & Text
+                else if (item.type === 'stat') {
                     let imageHTML = '';
                     if (item.image) {
-                        imageHTML = `<img src="${item.image}" alt="${item.header}" style="max-height: 200px; display: block; margin: 0 auto 1rem auto;">`;
+                        imageHTML = `<img src="${item.image}" alt="${item.header}" class="story-graphic">`;
                     }
-                    // End Image logic
                     contentHTML = `
                         ${imageHTML}
                         <div class="headline stat-header">${item.header}</div>
@@ -260,124 +321,17 @@ window.wrappedData = [
                     contentHTML = `
                         <div class="headline text-only" style="font-weight: 500;">${item.text}</div>
                     `;
-                } else if (item.type === 'outro') {
-                    contentHTML = `
-                        <div class="headline outro-text">${item.text}</div>
-                        <div class="subtext outro-subtext">${item.subtext}</div>
-                    `;
                 }
 
+                // Wrap in animated-inner for the constant floating motion separate from scroll
                 section.innerHTML = `
                     <div class="content-wrapper">
-                        ${contentHTML}
+                        <div class="animated-inner">
+                            ${contentHTML}
+                        </div>
                     </div>
                 `;
                 app.appendChild(section);
-            });
-
-            // --- ANIMATION SETUP ---
-            const sections = gsap.utils.toArray('.story-block');
-
-            sections.forEach((section, i) => {
-                const isHero = i === 0;
-                const content = section.querySelector('.content-wrapper');
-                const statValue = section.querySelector('.stat-value');
-                const subtexts = section.querySelectorAll('.subtext, .stat-unit');
-
-                // 1. Entrance / Flow
-                // Continuous flow: Things slide up and stay visible until they go off top naturally.
-                // We still want them to "enter" gracefully though.
-                if (isHero) {
-                    gsap.set(content, { opacity: 0, y: 50 });
-                    gsap.to(content, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 1.5,
-                        ease: "power3.out",
-                        delay: 0.2
-                    });
-                } else {
-                    gsap.fromTo(content, {
-                        opacity: 0,
-                        y: 150 // Start lower down
-                    }, {
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "top 80%", // Start animating when section top hits 80% viewport
-                            end: "top 40%",   // Fully visible by 40% viewport
-                            scrub: 1,
-                            toggleActions: "play none none reverse"
-                        },
-                        opacity: 1,
-                        y: 0,
-                        ease: "power2.out"
-                    });
-                }
-
-                // *NO EXIT ANIMATION* - We removed the code that fades it out at "top -20%".
-
-                // IMAGE ANIMATION (Simple pop in)
-                const img = content.querySelector('img');
-                if (img) {
-                    gsap.fromTo(img, { scale: 0.8, opacity: 0 }, {
-                        scale: 1,
-                        opacity: 1,
-                        duration: 0.5,
-                        ease: "back.out(1.7)",
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "top 70%",
-                        }
-                    });
-                }
-
-                // 2. Value Highlighting ("Pop" Effect)
-                if (statValue) {
-                    gsap.fromTo(statValue, {
-                        scale: 1,
-                        filter: "brightness(1)",
-                        color: "#79b436"
-                    }, {
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "center 60%", // When center of section hits 60% viewport (sweet spot)
-                            end: "center 40%",
-                            scrub: 0, // No scrub, just a trigger animation
-                            toggleActions: "play reverse play reverse"
-                        },
-                        scale: 1.25,
-                        filter: "brightness(1.2)",
-                        color: "#8cd140", // Slightly lighter/brighter green pop
-                        duration: 0.4,
-                        ease: "back.out(1.7)"
-                    });
-                }
-
-                // 3. Subtle Background Text Animation
-                // Parallax effect for subtext to make it feel detached and "floaty"
-                if (subtexts.length > 0) {
-                    gsap.to(subtexts, {
-                        y: -30, // Move up slightly faster than container
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "top bottom",
-                            end: "bottom top",
-                            scrub: true
-                        }
-                    });
-                }
-            });
-
-            // Global Progress Bar
-            gsap.to('.progress-bar', {
-                width: '100%',
-                scrollTrigger: {
-                    trigger: '#app',
-                    start: 'top top',
-                    end: 'bottom bottom',
-                    scrub: 0
-                }
             });
         });
     </script>

@@ -4,14 +4,14 @@
 
 **Objective:** Create a single-page web application that acts as an engaging end-of-year newsletter for employees. The concept is inspired by "Spotify Wrapped," presenting company statistics in a fun, animated, "scrollytelling" format.
 
-**Core Philosophy:** The experience should feel dynamic and playful. It is not just presenting data; it is telling a story through movement. The user should feel a sense of ownership and fun as they scroll through the company's collective achievements.
+**Core Philosophy:** The experience should feel dynamic and playful. It is not just presenting data; it is telling a story through movement.
 
 ---
 
 ### 1. Technical Architecture & Constraints
 
 - **Delivery:** The final output must be a single `index.html` file that can be opened in any modern browser.
-    - *Constraint Note:* While the goal is a single file, we acknowledge that external assets (images/graphics) make this difficult. The ideal solution is an `index.html` that references local images within a relative `./assets` subfolder, as this will be hosted on an internal private network drive.
+    - *Constraint Note:* While the goal is a single file, we acknowledge that external assets (images/graphics) make this difficult. The solution is to incorporate a build.py script that is able to embed the data JSON file into the script tag and the images as base64.
 - **Privacy:** This will be hosted on a private internal network. No authentication or external database connections are required.
 - **Dependencies:** CSS-only scroll-driven animations are required, no external libraries can be used. No JS external libraries may be used either.
 
@@ -19,10 +19,10 @@
 
 The core interaction is a long vertical scroll. It is not truly "infinite" in the sense of dynamically loading endless content, but rather a long, sequential narrative page.
 
-- **Behavior:** The page starts blank or with a title card and a subtext that says “scroll down” with arrows indicating what to do . As the user scrolls down, discrete "Data Story Blocks" enter the viewport.
+- **Behavior:** The page starts with a title card and a subtext that says “scroll down” with arrows indicating what to do. As the user scrolls down, discrete "Data Story Blocks" enter the viewport.
 - **Scroll Triggering:** Elements must react to the scroll position. They should not just be static on the page.
-    - **Entrance:** As a block enters the bottom of the viewport, it should animate in (e.g., fade in, slow zoom, slide up).
-    - **Active State:** While the block is in the center of the viewport, it should have subtle, continuous movement (e.g., a slow floating effect, a gentle panning motion) to keep it feeling "alive."
+    - **Entrance:** As a block enters the bottom of the viewport, it should fade in.
+    - **Active State:** While the block is in the center of the viewport, it should have subtle, continuous movement (e.g., a slow floating effect, a gentle panning motion) to keep it feeling "alive." The animation type will be selected in the data.json file.
     - **Exit:** As the block leaves the top of the viewport, it should slowly fade way to an opacity level of 0.
 
 ### 3. Content Structure (Data Input)
@@ -36,9 +36,9 @@ The application should iterate through an array of story objects. Each object sh
 1. **`id`**: Unique identifier indicating order (e.g., 1, 2, 3).
 2. header: The measurement e.g. “number of pins crimped”
 3. value: The main stat 27,000 (the number of pins crimped).
-4. subtext: The fun comparison (e.g., "That’s enough to shake hands with every person in [City Name]!").
+4. subtext: The fun comparison (e.g., "That’s enough to shake hands with every person in Key West!").
 5. **graphic**: (Optional) Relative path to a supporting graphic in the assets folder (e.g., `./assets/state-shape.png`).
-6. **`animationStyle`**: (Optional) A tag to vary the animation slightly between blocks so it doesn't look repetitive (e.g., "zoom-in", "slide-left", "pop-up").
+6. **`animation`**: (Optional) A tag to vary the animation slightly between blocks so it doesn't look repetitive (e.g., "zoom-in", "slide-left", "pop-up").
 
 **Example Data Payload (for testing):**
 
@@ -52,17 +52,17 @@ JSON
     value: "4,500",
     unit: "gallons",
     context: "Fueling innovation, one cup at a time.",
-    image: "assets/graphic-coffee.svg"
+    image: "assets/graphic-coffee.svg",
+    animation: "zoom-in"
 	}
 ]
 ```
 
 ### 4. Visual Design Directives
 
-- **Typography:** Text animation is crucial. The user loves seeing text "come to life." The headline and subtext should perhaps animate in slightly differently (e.g., staggered entrance).
-- **Graphics:** The layout needs to accommodate a graphic alongside the text blocks. The graphics should participate in the entrance/exit animations.
-- **Background:** The background should not be static white. It should preferably change subtly as you scroll, perhaps shifting colors to match the current data theme, or containing subtle, slow-moving abstract shapes to add depth without distracting from the text.
-- **Colors**: The background should be white, the text should be gray (#5e6565), but the values should be accented in green (#79b533)
+- **Typography:** Text animation is crucial. The user loves seeing text "come to life." The headline and subtext should animate slightly differently (e.g., staggered entrance).
+- **Graphics:** The layout needs to accommodate a graphic alongside the text blocks. The graphics should participate in the entrance/exit animations. The graphics should match the accent color of the page.
+- **Colors**: The background should be a very subtle off-white diagonal gradient, the text should be gray (#5e6565), but the values should be accented in green (#79b533)
 
 ### 5. Definition of Done
 
