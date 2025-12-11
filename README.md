@@ -2,21 +2,16 @@
 
 A template to create a scrollytale of datapoints with context.
 
-## A markdown badge for a link to a demo on Github pages:
-[Demo](https://jimothyjohn.github.io/scrollytelling/)
-
-## Features
-
-- Just one HTML file. 100% portable (assuming you have an OS)
-
-- Canned animation features
+## [Demo](https://jimothyjohn.github.io/scrollytelling/)
 
 ## How-to
 
-1. Put your graphics in [assets/](assets/)
+1. Configure your story in [data.js](data.js)
 
-2. Add your data to [data.json](data.json)
+2. Put your graphics in [assets/](assets/)
 
-3. Run [./build.py](build.py) to generate [index.html](index.html)
+3. Open [index.html](index.html) in your browser to view the story.
 
-4. Enjoy your scrollytale!
+### Why?
+
+"Just make a video instead...". You're missing the point. It needs to feel interactive. You're controlling the tempo and time to maximize your personal impact. The animation is a structure, not a decoration.

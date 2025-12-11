@@ -1,0 +1,131 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --accent-color: #79b436;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+/* Container for all scrollytelling sections */
+#app {
+    width: 100%;
+    position: relative;
+}
+
+/* Individual Story Block */
+.story-block {
+    /* 150vh creates the "slow" and "high-res" feel by forcing more scroll distance */
+    min-height: 150vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 2rem;
+    box-sizing: border-box;
+    will-change: transform, opacity;
+}
+
+.content-wrapper {
+    max-width: 900px;
+    text-align: center;
+    z-index: 2;
+}
+
+.headline {
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+    /* Adjusted for light background: Dark gray to black gradient for premium look */
+    background: linear-gradient(45deg, #000, #333);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Specific styles for stats */
+.stat-value-container {
+    margin: 2rem 0;
+    perspective: 1000px;
+    /* For 3D pop effect */
+}
+
+.stat-value {
+    font-size: clamp(5rem, 12vw, 10rem);
+    font-weight: 800;
+    color: var(--accent-color);
+    display: inline-block;
+    /* Changed to inline-block for transforms */
+    line-height: 1;
+    text-shadow: 0 10px 30px rgba(121, 180, 54, 0.2);
+    will-change: transform, color;
+}
+
+.stat-unit {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 300;
+    color: var(--accent-color);
+    display: block;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.subtext {
+    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+    font-weight: 300;
+    color: var(--accent-color);
+    /* The requested #79b436 */
+    margin-bottom: 2rem;
+    line-height: 1.5;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    will-change: transform, opacity;
+}
+
+.hero-subtext,
+.outro-subtext {
+    color: var(--accent-color);
+}
+
+/* Scroll Progress Indicator */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 6px;
+    background: var(--accent-color);
+    width: 0%;
+    z-index: 100;
+}
