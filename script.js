@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- SMOTH SCROLL SETUP (LENIS) ---
     const lenis = new Lenis({
-        duration: 1.5, // Even slower/smoother
+        duration: 2.5, // Even slower/smoother
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         direction: 'vertical',
         gestureDirection: 'vertical',
@@ -21,33 +21,80 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.ticker.lagSmoothing(0);
 
     // --- CONTENT RENDERING ---
-    const data = window.wrappedData || [];
+    // The data is now a flat list. 
+    // We iterate through it and maintain a "currentSectionAnimation" state.
+    // If a type="text" item has a "sectionAnimation" property, we update the state.
+    // Subsequent items inherit this unless they have their own "animation".
+    
+    const rawData = window.wrappedData || [];
+    const data = []; // This will contain the final items with resolved 'animation' property.
+
+    let currentSectionAnimation = null;
+
+    rawData.forEach(item => {
+        // If it's a context-setting text item
+        if (item.type === 'text') {
+            if (item.animation !== undefined) {
+                currentSectionAnimation = item.animation;
+            } else {
+                // If it doesn't specify one, reset to static.
+                currentSectionAnimation = null;
+            }
+        }
+        
+        // Resolve animation for this item
+        let finalAnim = item.animation; // Explicit logic
+        if (!finalAnim && currentSectionAnimation) {
+             finalAnim = currentSectionAnimation; // Inherited logic
+        }
+        
+        // Clone item to avoid mutating original if we re-run
+        const newItem = { ...item, animation: finalAnim };
+        data.push(newItem);
+    });
 
     data.forEach((item, index) => {
         const section = document.createElement('section');
-        section.className = `story-block type-${item.type}`;
+        // Add animation class for specific styling overrides (e.g. traverse height)
+        const animClass = item.animation ? `anim-${item.animation}` : 'anim-static';
+        section.className = `story-block type-${item.type} ${animClass}`;
         section.id = `block-${index}`;
         section.dataset.bgcolor = '#ffffff';
 
         let contentHTML = '';
 
-        if (item.type === 'hero') {
-            // Hero now uses header/subtext
-            contentHTML = `
-                <div class="headline hero-text" style="font-size: clamp(6rem, 16vw, 12rem);">${item.header}</div>
-                <div class="subtext hero-subtext" style="font-size: 3rem; letter-spacing: 3px; text-transform: uppercase;">${item.subtext}</div>
-            `;
-        } else if (item.type === 'stat') {
+        if (item.type === 'stat') {
             // Start Graphic logic
             let graphicHTML = '';
             if (item.graphic) {
-                const imgStr = item.graphic.trim();
+                let imgStr = '';
+                let sizeInput = null;
+
+                // Handle graphic as Object or String
+                if (typeof item.graphic === 'object' && item.graphic !== null) {
+                    imgStr = (item.graphic.filepath || '').trim();
+                    sizeInput = item.graphic.size;
+                } else {
+                    imgStr = String(item.graphic).trim();
+                    sizeInput = null;
+                }
+                
+                // Determine size (default to 100px if not provided)
+                let sizeVal = '100px';
+                if (sizeInput) {
+                    if (typeof sizeInput === 'number') {
+                        sizeVal = sizeInput + 'px';
+                    } else {
+                        sizeVal = sizeInput;
+                    }
+                }
+
                 if (imgStr.startsWith('<svg') || imgStr.startsWith('<?xml')) {
                         // It's raw SVG
-                        graphicHTML = `<div class="svg-container" style="max-height: 100px; display: block; margin: 0 auto 1rem auto; width: 100%; display: flex; justify-content: center;">${item.graphic}</div>`;
-                } else {
-                    // It's a URL or Base64
-                    graphicHTML = `<img src="${item.graphic}" alt="${item.header}" style="max-height: 100px; display: block; margin: 0 auto 1rem auto;">`;
+                        graphicHTML = `<div class="svg-container" style="max-height: ${sizeVal}; display: block; margin: 0 auto 1rem auto; width: 100%; display: flex; justify-content: center;">${imgStr}</div>`;
+                } else if (imgStr) {
+                    // It's a URL or Base64 (only if imgStr is not empty)
+                    graphicHTML = `<img src="${imgStr}" alt="${item.header}" style="max-height: ${sizeVal}; display: block; margin: 0 auto 1rem auto;">`;
                 }
             }
             // End Graphic logic
@@ -78,20 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${headerHTML}
                 ${subtextHTML}
             `;
-        } else if (item.type === 'outro') {
-             // Outro uses header/subtext too (mapped from prev text/subtext usually, but let's conform)
-             // User's example didn't explicitly show 'outro' type in new schema, but data.js has 'text' type for end.
-             // But if we stick to the old 'outro' type in data.js or migrate it to text?
-             // The user's new schema only mentions "stat", "text", "hero".
-             // Let's assume 'outro' is just 'text' type or similar. 
-             // However, current data.js has type 'text' for the last item "Here's to 2026!".
-             // So we should handle 'text' generally.
-             // If there is legacy 'outro', we can map it or just rely on 'text'.
-             // I'll keep 'outro' fallback but aligned to use header/subtext if present.
-            contentHTML = `
-                <div class="headline outro-text" style="font-size: clamp(6rem, 16vw, 12rem);">${item.header || item.text}</div>
-                <div class="subtext outro-subtext">${item.subtext || ''}</div>
-            `;
         }
 
         section.innerHTML = `
@@ -106,174 +139,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const sections = gsap.utils.toArray('.story-block');
 
     sections.forEach((section, i) => {
-        const isHero = i === 0;
         const content = section.querySelector('.content-wrapper');
         const statValue = section.querySelector('.stat-value');
         const subtexts = section.querySelectorAll('.subtext, .stat-unit');
 
-        // 1. Entrance / Flow
-        // Continuous flow: Things slide up and stay visible until they go off top naturally.
-        // We still want them to "enter" gracefully though.
-        if (isHero) {
-            gsap.set(content, { opacity: 0, y: 50 });
-            gsap.to(content, {
-                opacity: 1,
-                y: 0,
-                duration: 1.5,
-                ease: "power3.out",
-                delay: 0.2
-            });
-        } else {
-            // Access the data item for this section
-            const item = data[i];
-
-        if (item.animation === 'fadeInOut') {
-                gsap.fromTo(content, {
-                opacity: 0
-            }, {
-                opacity: 0, 
-                keyframes: {
-                    "0%":   { opacity: 0, y: "20vh" },
-                    "40%":  { opacity: 1, y: 0 },   // Fully visible near center
-                    "60%":  { opacity: 1, y: 0 },   // Stay visible for a bit
-                    "100%": { opacity: 0, y: "-20vh" } // Fade out as it goes up
-                },
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top bottom",   // When top of section hits bottom of viewport
-                    end: "bottom top",     // Wait until it hits top to fade out
-                    scrub: true            // Smooth scrubbing
-                },
-                ease: "none"
-            });
-        } else if (item.animation === 'zoomReveal') {
-            gsap.fromTo(content, {
-                scale: 0.5,
-                opacity: 0
-            }, {
-                keyframes: {
-                    "0%":   { scale: 0.5, opacity: 0 },
-                    "50%":  { scale: 1.2, opacity: 1 },
-                    "100%": { scale: 1.0, opacity: 1 }
-                },
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 90%",
-                    end: "bottom top",
-                    scrub: 1
-                },
-                ease: "none"
-            });
-        } else if (item.animation === 'sideEntrance') {
-            gsap.fromTo(content, {
-                x: "-100vw",
-                opacity: 0
-            }, {
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top bottom",
-                    end: "center center", // Extend duration
-                    scrub: 1
-                },
-                x: 0,
-                opacity: 1,
-                ease: "power2.out"
-            });
-        } else if (item.animation === 'slideRight') {
-            gsap.fromTo(content, {
-                x: "100vw",
-                opacity: 0
-            }, {
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top bottom",
-                    end: "center center", 
-                    scrub: 1
-                },
-                x: 0,
-                opacity: 1,
-                ease: "power2.out"
-            });
-        } else {
-            // Animation: 'slideUp' (Default)
-            // explicitly check for 'slideUp' or fallback for undefined
-            gsap.fromTo(content, {
-                opacity: 0,
-                y: 150 // Start lower down
-            }, {
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 80%", // Start animating when section top hits 80% viewport
-                    end: "top 40%",   // Fully visible by 40% viewport
-                    scrub: 1,
-                    toggleActions: "play none none reverse"
-                },
-                opacity: 1,
-                y: 0,
-                ease: "power2.out"
-            });
-        }
+        // Access the data item for this section (already flattened)
+        const item = data[i];
+        
+        // Resolve animation function
+        // If item.animation is set (inherited or explicit), use it.
+        // Otherwise, do NOTHING (static scroll).
+        if (item.animation && window.Animations[item.animation]) {
+            window.Animations[item.animation](content, section, item);
         }
 
-        // *NO EXIT ANIMATION* - We removed the code that fades it out at "top -20%".
-
-        // IMAGE ANIMATION (Simple pop in)
+        // IMAGE ANIMATION
+        // Only run if there is an animation, otherwise static
         const img = content.querySelector('img');
-        if (img) {
-            gsap.fromTo(img, { scale: 0.8, opacity: 0 }, {
-                scale: 1,
-                opacity: 1,
-                duration: 0.5,
-                ease: "back.out(1.7)",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top 70%",
-                }
-            });
+        if (item.animation && window.Animations.popIn) {
+            window.Animations.popIn(img, section);
         }
 
         // 2. Value Highlighting ("Pop" Effect)
-        // Only apply if it's the default (slideUp) or fadeInOut. 
-        // Don't apply for special entrances to keep them clean.
-        let currentAnim; 
-        if (data[i]) {
-            currentAnim = data[i].animation;
-        }
-        
-        if (statValue && (currentAnim === 'slideUp' || currentAnim === 'fadeInOut' || !currentAnim)) {
-            gsap.fromTo(statValue, {
-                scale: 1,
-                filter: "brightness(1)",
-                color: "#79b436"
-            }, {
-                scrollTrigger: {
-                    trigger: section,
-                    start: "center 80%", // When center of section hits 60% viewport (sweet spot)
-                    end: "center 60%",
-                    scrub: 0, // No scrub, just a trigger animation
-                    toggleActions: "play reverse play reverse"
-                },
-                scale: 1.15,
-                filter: "brightness(1.2)",
-                color: "#8cd140", // Slightly lighter/brighter green pop
-                duration: 1.0,    // Slower
-                ease: "back.out(1.7)"
-            });
+        // Only apply if it's 'slideUp' or 'fadeInOut'
+        if (statValue && (item.animation === 'slideUp' || item.animation === 'fadeInOut')) {
+            if (window.Animations.popStat) {
+                window.Animations.popStat(statValue, section);
+            }
         }
 
         // 3. Subtle Background Text Animation
-        // Parallax effect for subtext to make it feel detached and "floaty"
-        if (subtexts.length > 0) {
-            gsap.to(subtexts, {
-                y: -30, // Move up slightly faster than container
-                ease: "none",
-                scrollTrigger: {
-                    trigger: section,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true
-                }
-            });
+        // Always good to have a little life, but user said "static along with users movement".
+        // Let's only Apply parallax if there is an animation defined to stick to the rule.
+        if (item.animation && window.Animations.parallaxSubtext) {
+            window.Animations.parallaxSubtext(subtexts, section);
         }
     });
 

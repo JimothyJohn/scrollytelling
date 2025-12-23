@@ -50,7 +50,7 @@ html.lenis {
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: 2rem;
+    padding: 1rem;
     box-sizing: border-box;
     will-change: transform, opacity;
 }
@@ -128,4 +128,10 @@ html.lenis {
     background: var(--accent-color);
     width: 0%;
     z-index: 100;
+}
+
+/* Animation Specific Overrides */
+.anim-traverse {
+    /* Reduce height to compensate for long pin duration */
+    min-height: 100vh;
 }

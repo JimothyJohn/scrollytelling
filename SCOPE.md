@@ -1,32 +1,29 @@
-**Project Title:** Internal "Company Wrapped" Scrollytelling Experience
+**Project Title:** Scrollytelling Experience
 
-**Role:** You are a Senior Frontend Developer with expertise in creative coding, animation, and data visualization.
+**Role:** You are a Senior Frontend Developer with expertise in creative coding, animation, and visualization.
 
-**Objective:** Create a single-page web application that acts as an engaging end-of-year newsletter for employees. The concept is inspired by "Spotify Wrapped," presenting company statistics in a fun, animated, "scrollytelling" format.
+**Objective:** Create a single-page web application that acts as an engaging story in a fun, animated, "scrollytelling" format.
 
-**Core Philosophy:** The experience should feel dynamic and playful. It is not just presenting data; it is telling a story through movement.
+**Core Philosophy:** The experience should feel dynamic and playful. It is telling a story through movement.
 
 ---
 
 ### 1. Technical Architecture & Constraints
 
-- **Delivery:** The final output must be an `index.html` file that can be opened in any modern browser. It will reference local files like script.js, style.cssm and graphics in [assets](assets/).
+- **Delivery:** The final output must be an `index.html` file that can be opened in any modern browser. It will reference local files like script.js, style.css, and graphics in [assets](assets/).
 - **Publication:** This will be hosted as a static website.
-- **Dependencies:** CSS-only scroll-driven animations are required, no external libraries can be used. No JS external libraries may be used either aka no CDN's or dependencies that rely on the web.
+- **Dependencies:** CSS-only scroll-driven animations are required, no external libraries can be used.
 
 ### 2. Functional Requirements: The "Infinite" Scroll
 
 The core interaction is a long vertical scroll. It is not truly "infinite" in the sense of dynamically loading endless content, but rather a long, sequential narrative page.
 
-- **Behavior:** The page likely starts with a title card. As the user scrolls down, discrete "Data Story Blocks" enter the viewport.
+- **Behavior:** The page likely starts with a title card. As the user scrolls down, new sections enter the viewport.
 - **Scroll Triggering:** Elements must react to the scroll position. They should not just be static on the page. For example:
-    - **Entrance:** As a block enters the bottom of the viewport, it should fade in.
-    - **Active State:** While the block is in the center of the viewport, it should have subtle, continuous movement (e.g., a slow floating effect, a gentle panning motion) to keep it feeling "alive." The animation type will be selected in the data.json file.
-    - **Exit:** As the block leaves the top of the viewport, it should slowly fade way to an opacity level of 0.
 
 ### 3. Content Structure (Data Input)
 
-We need an easy way for a non-developer to update the stats and text. The content should be separated from the structure, ideally defined in a JSON object in data.json.
+We need an easy way for a non-developer to update the story. The content should be separated from the structure, ideally defined in a JSON object in data.js.
 
 **Proposed JSON Data Schema:**
 
@@ -47,15 +44,26 @@ JSON
 
 ```jsx
 [
-	{
-		type: "stat",
-		header: "Coffee consumed",
-        value: "4,500",
-        unit: "gallons",
-        subtext: "Fueling innovation, one cup at a time.",
-        graphic: "assets/graphic-coffee.svg",
-        animation: "zoom-in"
-	}
+	{ 
+        type: "text", 
+        header: "07:00 AM", 
+        subtext: "System initializing...",
+        animation: "fadeInOut" 
+    },
+    { 
+        type: "stat", 
+        header: "Snooze Button", 
+        value: "Hit 5x", 
+        subtext: "Just 5 more minutes...",
+        unit: "regrets"
+    },
+    { 
+        type: "stat", 
+        header: "Will to Rise", 
+        value: "Loading...", 
+        subtext: "Please wait.",
+        graphic: { filepath: "assets/handshake.svg", size: 100 }
+    }
 ]
 ```
 
